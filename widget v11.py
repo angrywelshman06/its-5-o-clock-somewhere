@@ -1,12 +1,20 @@
+from PyQt5.QtCore import QTimer, Qt, QEvent
+from PyQt5.QtGui import QPainter, QPixmap
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
 import datetime
+import pytz
+import pycountry
+import sys
+#importing the libraries needed for the requirements to be downloaded automatically.
+import subprocess
 import sys
 
-import pycountry
-from PyQt5.QtCore import QTimer, Qt, QEvent
-from PyQt5.QtGui import QFont, QColor, QPainter, QPixmap
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout
-import pytz
-
+def install_requirements():
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to install packages: {e}")
+        sys.exit(1)
 
 class DesktopWidget(QWidget):
     def __init__(self):
@@ -21,8 +29,7 @@ class DesktopWidget(QWidget):
         self.countries = self.get_countries_with_5_oclock()
         self.current_index = 0
 
-        self.background_image_path =r"C:\Users\rhysd\OneDrive\Desktop\5 o'clock widget\DALL·E 2023-06-19 21.05.07 - a picture of a cocktail on a beach.png"
-
+        self.background_image_path = r"C:\Users\rhysd\PycharmProjects\its-5-o-clock-somewhere\DALL·E 2023-06-19 21.05.07 - a picture of a cocktail on a beach.png"
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -38,6 +45,11 @@ class DesktopWidget(QWidget):
         self.layout.addWidget(self.dynamic_label)
 
         self.update_widget()
+
+        # Timer to check the time every second
+        self.time_check_timer = QTimer(self)
+        self.time_check_timer.timeout.connect(self.check_time)
+        self.time_check_timer.start(1000)  # 1 second in milliseconds
 
     def get_countries_with_5_oclock(self):
         countries = list(pytz.country_timezones.keys())
@@ -60,8 +72,20 @@ class DesktopWidget(QWidget):
 
         self.current_index = (self.current_index + 1) % len(self.countries)
 
-        # Update every 5 seconds (5000 milliseconds)
+        # Update every 2 seconds (2000 milliseconds)
         QTimer.singleShot(2000, self.update_widget)
+
+    def check_time(self):
+        now = datetime.datetime.now()
+        if now.minute == 0 and now.second == 0:
+            self.update_countries()
+
+    def update_countries(self):
+        self.countries = self.get_countries_with_5_oclock()
+        self.current_index = 0  # Reset index to start from the first country
+        country = self.countries[self.current_index]
+        country_name = country.name
+        self.dynamic_label.setText(country_name)
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -90,7 +114,11 @@ class DesktopWidget(QWidget):
         painter.drawPixmap(self.rect(), pixmap)
 
 
+
+
+
 if __name__ == "__main__":
+    install_requirements()
     app = QApplication(sys.argv)
 
     # Set Windows-like style

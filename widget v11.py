@@ -5,6 +5,16 @@ import datetime
 import pytz
 import pycountry
 import sys
+#importing the libraries needed for the requirements to be downloaded automatically.
+import subprocess
+import sys
+
+def install_requirements():
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to install packages: {e}")
+        sys.exit(1)
 
 class DesktopWidget(QWidget):
     def __init__(self):
@@ -104,7 +114,11 @@ class DesktopWidget(QWidget):
         painter.drawPixmap(self.rect(), pixmap)
 
 
+
+
+
 if __name__ == "__main__":
+    install_requirements()
     app = QApplication(sys.argv)
 
     # Set Windows-like style

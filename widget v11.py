@@ -29,7 +29,7 @@ class DesktopWidget(QWidget):
         self.countries = self.get_countries_with_5_oclock()
         self.current_index = 0
 
-        self.background_image_path = r"C:\Users\rhysd\PycharmProjects\its-5-o-clock-somewhere\DALL·E 2023-06-19 21.05.07 - a picture of a cocktail on a beach.png"
+        self.background_image_path = r"Insert your photo address here"
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
